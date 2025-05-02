@@ -14,7 +14,7 @@ export default function Dashboard() {
           router.push("/");
           return;
         }
-
+        console.log(token);
         // Example of calling a protected endpoint
         await axios.get("http://localhost:5000/api/protected", {
           headers: { Authorization: `Bearer ${token}` },
