@@ -5,13 +5,13 @@ const cors = require("cors");
 // Import modules
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
-// const taskRoutes = require("./routes/task");
+const taskRoutes = require("./routes/task");
 const app = express();
 
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000", // Your Next.js frontend URL
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
@@ -22,11 +22,7 @@ connectDB();
 
 // Routes
 app.use("/api", authRoutes);
-
-// app.use("/api", taskRoutes);
-
-// Health check
-// app.get("/api/health", (req, res) => res.json({ status: "OK" }));
+app.use("/api", taskRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;
