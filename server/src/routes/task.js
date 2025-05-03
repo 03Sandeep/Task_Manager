@@ -86,21 +86,22 @@ router.get("/tasks/overdue", auth, async (req, res) => {
 
 // Update a task
 router.put("/tasks/:id", auth, async (req, res) => {
+  console.log("Task handler");
   try {
     const { title, description, status, priority, dueDate, assignedTo } =
       req.body;
 
     // Find the task
     let task = await Task.findById(req.params.id);
-
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
 
     // Check if user is authorized to update (either creator or assignee)
     if (
-      task.createdBy.toString() !== req.user.id &&
-      (task.assignedTo === null || task.assignedTo.toString() !== req.user.id)
+      task.createdBy.toString() !== req.user.id.toString() &&
+      (task.assignedTo === null ||
+        task.assignedTo.toString() !== req.user.id.toString())
     ) {
       return res
         .status(401)
@@ -140,18 +141,21 @@ router.put("/tasks/:id", auth, async (req, res) => {
 router.delete("/tasks/:id", auth, async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
-
+    // console.log(task);
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
-
+    console.log(
+      `created by ${task.createdBy.toString()} and user is ${req.user.id.toString()}`
+    );
     // Only the creator can delete a task
-    if (task.createdBy.toString() !== req.user.id) {
+    if (task.createdBy.toString() !== req.user.id.toString()) {
+      console.log("Line 151");
       return res
         .status(401)
         .json({ message: "Not authorized to delete this task" });
     }
-
+    console.log("Line 156");
     await Task.findByIdAndDelete(req.params.id);
     res.json({ message: "Task removed" });
   } catch (error) {
