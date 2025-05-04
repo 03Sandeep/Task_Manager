@@ -3,14 +3,16 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Assistant from "./assistant/ai";
+
 export default function Dashboard() {
   const router = useRouter();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("assigned");
   const [searchQuery, setSearchQuery] = useState("");
-  //For assistant visibility
   const [showAssistant, setShowAssistant] = useState(false);
+  const [showEditTaskModal, setShowEditTaskModal] = useState(false);
+  const [editTask, setEditTask] = useState(null); // Holds the task being edited
 
   const [filters, setFilters] = useState({
     status: "",
@@ -37,7 +39,6 @@ export default function Dashboard() {
           return;
         }
 
-        // Fetch user data
         const userResponse = await axios.get(
           "http://localhost:5000/api/user/profile",
           {
@@ -45,11 +46,8 @@ export default function Dashboard() {
           }
         );
         setUserData(userResponse.data);
-
-        // Fetch tasks based on active tab
         await fetchTasks(activeTab);
 
-        // Fetch available users for task assignment
         const usersResponse = await axios.get(
           "http://localhost:5000/api/users",
           {
@@ -57,7 +55,6 @@ export default function Dashboard() {
           }
         );
         setAvailableUsers(usersResponse.data);
-
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -98,6 +95,16 @@ export default function Dashboard() {
       toast.error("Failed to fetch tasks");
     }
   };
+
+  // ... (keep all your existing handler functions unchanged)
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -288,16 +295,13 @@ export default function Dashboard() {
       )}
 
       {/* Navigation */}
-      <nav className="bg-white shadow-md p-4">
+      <nav className="bg-white shadow-sm p-4 border-b">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-800">Task Manager</h1>
           <div className="flex items-center space-x-4">
-            <span className="text-gray-600">
-              Welcome, {userData.name || userData.email}
-            </span>
             <button
               onClick={handleLogout}
-              className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition duration-200"
+              className="bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition duration-200 text-sm"
             >
               Logout
             </button>
@@ -309,6 +313,12 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto p-4 mt-8 pb-16">
         <div className="bg-white rounded-lg shadow-md p-6">
           {/* Task Management Controls */}
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            Welcome back, {userData.name?.split(" ")[0] || "User"}!
+          </h2>
+          <p className="text-gray-600 mb-4">
+            Here's what's on your plate today.
+          </p>
           <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
             <div className="flex space-x-4 mb-4 md:mb-0">
               <button
@@ -470,11 +480,8 @@ export default function Dashboard() {
                           <>
                             <button
                               onClick={() => {
-                                // Implement edit task functionality
-                                // This would typically open a modal with task details
-                                toast.error(
-                                  "Edit functionality to be implemented"
-                                );
+                                setEditTask(task);
+                                setShowEditTaskModal(true);
                               }}
                               className="text-yellow-500 hover:text-yellow-700"
                             >
@@ -595,6 +602,115 @@ export default function Dashboard() {
                   className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
                 >
                   Create Task
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showEditTaskModal && editTask && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Edit Task</h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleUpdateTask(editTask._id, editTask);
+                setShowEditTaskModal(false);
+              }}
+            >
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  value={editTask.title}
+                  onChange={(e) =>
+                    setEditTask({ ...editTask, title: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={editTask.description}
+                  onChange={(e) =>
+                    setEditTask({ ...editTask, description: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                  required
+                ></textarea>
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Due Date
+                </label>
+                <input
+                  type="date"
+                  value={editTask.dueDate?.split("T")[0] || ""}
+                  onChange={(e) =>
+                    setEditTask({ ...editTask, dueDate: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Priority
+                </label>
+                <select
+                  value={editTask.priority}
+                  onChange={(e) =>
+                    setEditTask({ ...editTask, priority: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+              <div className="mb-6">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Assign To
+                </label>
+                <select
+                  value={editTask.assignedTo || ""}
+                  onChange={(e) =>
+                    setEditTask({ ...editTask, assignedTo: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select a user</option>
+                  {availableUsers.map((user) => (
+                    <option key={user._id} value={user._id}>
+                      {user.name || user.email}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEditTaskModal(false)}
+                  className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+                >
+                  Update Task
                 </button>
               </div>
             </form>

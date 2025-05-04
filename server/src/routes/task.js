@@ -145,9 +145,6 @@ router.delete("/tasks/:id", auth, async (req, res) => {
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
-    console.log(
-      `created by ${task.createdBy.toString()} and user is ${req.user.id.toString()}`
-    );
     // Only the creator can delete a task
     if (task.createdBy.toString() !== req.user.id.toString()) {
       console.log("Line 151");
