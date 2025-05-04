@@ -6,6 +6,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
 const taskRoutes = require("./routes/task");
+const taskAssistantRoutes = require("./routes/taskAssistant");
 const app = express();
 
 // Middleware
@@ -23,6 +24,7 @@ connectDB();
 // Routes
 app.use("/api", authRoutes);
 app.use("/api", taskRoutes);
+app.use("/api/assistant", taskAssistantRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;

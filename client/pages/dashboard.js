@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import toast from "react-hot-toast";
-
+import Assistant from "./assistant/ai";
 export default function Dashboard() {
   const router = useRouter();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("assigned");
   const [searchQuery, setSearchQuery] = useState("");
+  //For assistant visibility
+  const [showAssistant, setShowAssistant] = useState(false);
+
   const [filters, setFilters] = useState({
     status: "",
     priority: "",
@@ -245,7 +248,46 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 relative">
+      {/* Floating Assistant Button */}
+      <button
+        onClick={() => setShowAssistant(!showAssistant)}
+        className="fixed bottom-6 right-6 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition duration-200 z-50 flex items-center justify-center"
+        aria-label="Open assistant"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+          />
+        </svg>
+      </button>
+
+      {/* Assistant Component */}
+      {showAssistant && (
+        <div className="fixed bottom-24 right-6 w-80 bg-white rounded-lg shadow-xl z-50 border border-gray-200">
+          <Assistant
+            onClose={() => setShowAssistant(false)}
+            tasks={tasks}
+            user={userData}
+            onCreateTask={(taskData) => {
+              setNewTask(taskData);
+              setShowNewTaskModal(true);
+              setShowAssistant(false);
+            }}
+          />
+        </div>
+      )}
+
+      {/* Navigation */}
       <nav className="bg-white shadow-md p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-800">Task Manager</h1>
@@ -263,7 +305,8 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto p-4 mt-8">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto p-4 mt-8 pb-16">
         <div className="bg-white rounded-lg shadow-md p-6">
           {/* Task Management Controls */}
           <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
@@ -457,7 +500,7 @@ export default function Dashboard() {
 
       {/* New Task Modal */}
       {showNewTaskModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Create New Task</h2>
             <form onSubmit={handleCreateTask}>
