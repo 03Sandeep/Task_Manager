@@ -4,7 +4,6 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import Head from "next/head";
 import AuthForm from "./auth/AuthForm";
-import AssistantModal from "../pages/assistant/ai";
 
 export default function Home() {
   const router = useRouter();
@@ -15,7 +14,6 @@ export default function Home() {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -51,34 +49,6 @@ export default function Home() {
         <title>{isLogin ? "Login | TaskFlow" : "Sign Up | TaskFlow"}</title>
         <meta name="description" content="Team Task Management System" />
       </Head>
-
-      {/* Assistant Floating Button */}
-      <button
-        onClick={() => setIsAssistantOpen(true)}
-        className="fixed bottom-6 right-6 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition-colors duration-200 z-40"
-        aria-label="Open Task Assistant"
-      >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-          />
-        </svg>
-      </button>
-
-      {/* Assistant Modal */}
-      <AssistantModal
-        isOpen={isAssistantOpen}
-        onClose={() => setIsAssistantOpen(false)}
-      />
 
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden w-full max-w-md">

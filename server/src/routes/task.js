@@ -147,12 +147,12 @@ router.delete("/tasks/:id", auth, async (req, res) => {
     }
     // Only the creator can delete a task
     if (task.createdBy.toString() !== req.user.id.toString()) {
-      console.log("Line 151");
+      // console.log("Line 151");
       return res
         .status(401)
         .json({ message: "Not authorized to delete this task" });
     }
-    console.log("Line 156");
+    // console.log("Line 156");
     await Task.findByIdAndDelete(req.params.id);
     res.json({ message: "Task removed" });
   } catch (error) {

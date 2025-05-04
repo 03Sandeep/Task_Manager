@@ -22,7 +22,6 @@ module.exports = async function (req, res, next) {
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("25");
     // Check token structure
     if (!decoded?.id) {
       // Changed from decoded.user.id to decoded.id
