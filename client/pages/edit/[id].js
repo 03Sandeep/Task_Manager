@@ -26,14 +26,14 @@ export default function EditTask() {
 
         // Fetch task
         const taskRes = await axios.get(
-          `http://localhost:5000/api/tasks/${id}`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/${id}`,
           config
         );
         setTask(taskRes.data);
 
         // Fetch users for assignment
         const usersRes = await axios.get(
-          "http://localhost:5000/api/users",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users`,
           config
         );
         setUsers(usersRes.data);

@@ -17,9 +17,12 @@ export default function TaskList({
     setIsDeleting(taskId);
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/tasks/${taskId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/${taskId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       toast.success("Task deleted successfully");
       if (onTaskDelete) onTaskDelete(taskId);
     } catch (error) {
@@ -33,7 +36,7 @@ export default function TaskList({
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `http://localhost:5000/api/tasks/${taskId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/${taskId}`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );

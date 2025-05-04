@@ -56,7 +56,7 @@ function TaskAssistant() {
   const fetchUsers = async (token) => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/assistant/users",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/assistant/users`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -100,7 +100,7 @@ function TaskAssistant() {
     }
 
     try {
-      const endpoint = `http://localhost:5000/api/assistant/tasks/${type}`;
+      const endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/assistant/tasks/${type}`;
       const response = await fetch(endpoint, {
         headers: {
           Authorization: `Bearer ${userToken}`,
@@ -133,7 +133,7 @@ function TaskAssistant() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/assistant/tasks/${taskId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/assistant/tasks/${taskId}`,
         {
           method: "DELETE",
           headers: {
@@ -524,7 +524,7 @@ function TaskAssistant() {
   const submitNewTask = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/assistant/tasks",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/assistant/tasks`,
         {
           method: "POST",
           headers: {
@@ -575,7 +575,7 @@ function TaskAssistant() {
   const submitUpdatedTask = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/assistant/tasks/${currentTaskId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/assistant/tasks/${currentTaskId}`,
         {
           method: "PUT",
           headers: {
@@ -718,7 +718,7 @@ function TaskAssistant() {
     try {
       // Get the task details first
       const response = await fetch(
-        `http://localhost:5000/api/assistant/tasks/${taskId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/assistant/tasks/${taskId}`,
         {
           headers: {
             Authorization: `Bearer ${userToken}`,

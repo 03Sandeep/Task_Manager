@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import toast from "react-hot-toast";
-import Assistant from "./assistant/ai";
+import TaskAssistant from "./assistant/ai";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -40,7 +40,7 @@ export default function Dashboard() {
         }
 
         const userResponse = await axios.get(
-          "http://localhost:5000/api/user/profile",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/profile`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -49,7 +49,7 @@ export default function Dashboard() {
         await fetchTasks(activeTab);
 
         const usersResponse = await axios.get(
-          "http://localhost:5000/api/users",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -74,16 +74,16 @@ export default function Dashboard() {
 
       switch (tab) {
         case "assigned":
-          endpoint = "http://localhost:5000/api/tasks/assigned";
+          endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/assigned`;
           break;
         case "created":
-          endpoint = "http://localhost:5000/api/tasks/created";
+          endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/created`;
           break;
         case "overdue":
-          endpoint = "http://localhost:5000/api/tasks/overdue";
+          endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/overdue`;
           break;
         default:
-          endpoint = "http://localhost:5000/api/tasks/assigned";
+          endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/assigned`;
       }
 
       const response = await axios.get(endpoint, {
@@ -119,9 +119,13 @@ export default function Dashboard() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:5000/api/tasks", newTask, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks`,
+        newTask,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       toast.success("Task created successfully");
       setShowNewTaskModal(false);
       setNewTask({
@@ -142,7 +146,7 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/api/tasks/${taskId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/${taskId}`,
         updatedData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -160,9 +164,12 @@ export default function Dashboard() {
     if (confirm("Are you sure you want to delete this task?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5000/api/tasks/${taskId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/${taskId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         toast.success("Task deleted successfully");
         fetchTasks(activeTab);
       } catch (error) {
@@ -281,7 +288,7 @@ export default function Dashboard() {
       {/* Assistant Component */}
       {showAssistant && (
         <div className="fixed bottom-24 right-6 w-80 bg-white rounded-lg shadow-xl z-50 border border-gray-200">
-          <Assistant
+          <TaskAssistant
             onClose={() => setShowAssistant(false)}
             tasks={tasks}
             user={userData}
