@@ -4,12 +4,13 @@ import AuthToggle from "./AuthToggle";
 export default function AuthForm({
   isLogin,
   setIsLogin,
-  formData,
+  formData = { name: "", email: "", password: "" }, // Default values to avoid undefined errors
   handleChange,
   handleSubmit,
 }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Show Full Name input only if not in login mode */}
       {!isLogin && (
         <AuthInput
           label="Full Name"
@@ -22,6 +23,7 @@ export default function AuthForm({
         />
       )}
 
+      {/* Email Input */}
       <AuthInput
         label="Email Address"
         type="email"
@@ -32,6 +34,7 @@ export default function AuthForm({
         required
       />
 
+      {/* Password Input */}
       <AuthInput
         label="Password"
         type="password"
