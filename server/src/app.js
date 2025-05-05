@@ -21,6 +21,9 @@ app.use(
 connectDB();
 
 // Routes
+app.get("/", (req, res) => {
+  res.send("Root path is working!");
+});
 app.use("/api", authRoutes);
 app.use("/api", taskRoutes);
 app.use("/api/assistant", taskAssistantRoutes);
