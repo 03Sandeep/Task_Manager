@@ -8,15 +8,14 @@ const authRoutes = require("./routes/auth");
 const taskRoutes = require("./routes/task");
 const taskAssistantRoutes = require("./routes/taskAssistant");
 const app = express();
-
+app.use(express.json());
 // Middleware
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
     credentials: true,
   })
 );
-app.use(express.json());
 
 // Database connection
 connectDB();

@@ -27,16 +27,23 @@ export default function Home() {
     setIsLoading(true);
     try {
       const endpoint = isLogin ? "/api/login" : "/api/register";
+
+      // Only send relevant fields
+      const payload = isLogin
+        ? { email: formData.email, password: formData.password }
+        : formData; // name, email, password
+      console.log("Logging in with:", payload);
+
       const { data } = await axios.post(
-        `${
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
-        }${endpoint}`,
-        formData
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}${endpoint}`,
+        payload
       );
+
       localStorage.setItem("token", data.token);
       toast.success(isLogin ? "Login successful!" : "Registration successful!");
       router.push("/dashboard");
     } catch (error) {
+      console.log("error", error.response?.data);
       toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setIsLoading(false);

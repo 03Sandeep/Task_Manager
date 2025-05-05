@@ -13,13 +13,12 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user
+    // Hash the password before saving
+    // Create a new user
     user = new User({
       name,
       email,
-      password: hashedPassword, // Fixed: Changed from hashedPassword to password
+      password, // Store the hashed password
     });
 
     await user.save();
@@ -41,22 +40,45 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Ensure email and password are provided
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Please provide both email and password." });
+    }
+
+    // Trim email and password to avoid leading/trailing spaces
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
     // Check if user exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: trimmedEmail });
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      console.log(`Login attempt with non-existent email: ${trimmedEmail}`);
+      return res
+        .status(401)
+        .json({ message: "Invalid credentials: Email not found" });
     }
 
-    // Check password
-    const isMatch = await bcrypt.compare(password, user.password);
+    // Log the user object (excluding password) for debugging
+    console.log("User found: ", { email: user.email, id: user.id });
+    // Check password match
+    console.log(`Store is db is ${user.password}`);
+    const isMatch = await user.comparePassword(password);
+    console.log(isMatch);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      console.log(`Failed login attempt for email: ${trimmedEmail}`);
+      return res
+        .status(401)
+        .json({ message: "Invalid credentials: Incorrect password" });
     }
 
-    // Create and return JWT
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+    // Create and return JWT token
+    const token = jwt.sign({ user: { id: user.id } }, process.env.JWT_SECRET, {
+      expiresIn: "7d", // Token expiration time
     });
+
+    // Respond with the token
     res.json({ token });
   } catch (error) {
     console.error("Login error:", error);
