@@ -12,10 +12,14 @@ app.use(express.json());
 // Middleware
 app.use(
   cors({
-    origin:process.env.CLIENT_URL,
+    origin: [
+      'https://task-manager-ovck.vercel.app', // Without slash
+      'https://task-manager-ovck.vercel.app/', // With slash
+    ],
     credentials: true,
   })
 );
+
 
 // Database connection
 connectDB();
