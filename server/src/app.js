@@ -24,6 +24,9 @@ connectDB();
 app.use("/api", authRoutes);
 app.use("/api", taskRoutes);
 app.use("/api/assistant", taskAssistantRoutes);
+app.use("/api/help", (req, res) => {
+  res.send("hello");
+});
 
 // Start server
 const PORT = process.env.PORT || 5000;
