@@ -6,10 +6,14 @@ const router = express.Router();
 // Get all users (for task assignment)
 router.get("/", auth, async (req, res) => {
   try {
-    const users = await User.find({}, "name email");
+    const users = await User.find(
+      { _id: { $ne: req.user.id } }, // exclude the current user
+      "name email" // only return name and email
+    );
     res.send(users);
   } catch (error) {
-    res.status(500).send();
+    console.error("Error fetching users:", error);
+    res.status(500).send({ message: "Server error" });
   }
 });
 

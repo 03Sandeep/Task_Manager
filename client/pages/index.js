@@ -32,7 +32,6 @@ export default function Home() {
       const payload = isLogin
         ? { email: formData.email, password: formData.password }
         : formData; // name, email, password
-      console.log("Logging in with:", payload);
 
       const { data } = await axios.post(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}${endpoint}`,

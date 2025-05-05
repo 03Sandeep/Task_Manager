@@ -164,10 +164,11 @@ router.delete("/tasks/:id", auth, async (req, res) => {
 // Get all users (for task assignment)
 router.get("/users", auth, async (req, res) => {
   try {
-    // Import User model here to avoid circular dependencies
     const User = require("../models/User");
 
-    const users = await User.find().select("name email").sort({ name: 1 });
+    const users = await User.find({ _id: { $ne: req.user.id } }) // exclude logged-in user
+      .select("name email")
+      .sort({ name: 1 });
 
     res.json(users);
   } catch (error) {
