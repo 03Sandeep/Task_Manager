@@ -12,7 +12,7 @@ app.use(express.json());
 // Middleware
 app.use(
   cors({
-    origin: ["https://task-manager-ovck.vercel.app/"],
+    origin:process.env.CLIENT_URL,
     credentials: true,
   })
 );
