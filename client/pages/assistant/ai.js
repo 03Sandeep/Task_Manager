@@ -2,18 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-import {
-  Clock,
-  Calendar,
-  CheckSquare,
-  ListTodo,
-  Flag,
-  UserPlus,
-  AlertCircle,
-  PlusCircle,
-  Edit3,
-  Trash2,
-} from "lucide-react";
+import { CheckSquare, ListTodo, AlertCircle, PlusCircle } from "lucide-react";
 
 function TaskAssistant() {
   const [messages, setMessages] = useState([]);
@@ -34,8 +23,6 @@ function TaskAssistant() {
     assignedTo: "",
   });
 
-  const priorities = ["low", "medium", "high"];
-  const statuses = ["pending", "in-progress", "completed"];
   const messagesEndRef = useRef(null);
 
   useEffect(() => {

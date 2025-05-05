@@ -54,20 +54,15 @@ exports.login = async (req, res) => {
     // Check if user exists
     const user = await User.findOne({ email: trimmedEmail });
     if (!user) {
-      console.log(`Login attempt with non-existent email: ${trimmedEmail}`);
       return res
         .status(401)
         .json({ message: "Invalid credentials: Email not found" });
     }
 
     // Log the user object (excluding password) for debugging
-    console.log("User found: ", { email: user.email, id: user.id });
     // Check password match
-    console.log(`Store is db is ${user.password}`);
     const isMatch = await user.comparePassword(password);
-    console.log(isMatch);
     if (!isMatch) {
-      console.log(`Failed login attempt for email: ${trimmedEmail}`);
       return res
         .status(401)
         .json({ message: "Invalid credentials: Incorrect password" });

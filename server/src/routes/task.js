@@ -86,7 +86,6 @@ router.get("/tasks/overdue", auth, async (req, res) => {
 
 // Update a task
 router.put("/tasks/:id", auth, async (req, res) => {
-  console.log("Task handler");
   try {
     const { title, description, status, priority, dueDate, assignedTo } =
       req.body;

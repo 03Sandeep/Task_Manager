@@ -22,10 +22,8 @@ module.exports = async function (req, res, next) {
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
     // Check token structure - NOW LOOKING FOR decoded.user.id
     if (!decoded?.user?.id) {
-      console.log("Malformed token payload. Received:", decoded);
       return res.status(401).json({
         message: "Malformed token payload",
         details: "Expected token with { user: { id } } structure",
