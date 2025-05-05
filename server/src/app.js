@@ -12,7 +12,7 @@ app.use(express.json());
 // Middleware
 app.use(
   cors({
-    origin: ["http://localhost:3000", "*"],
+    origin: ["https://task-manager-ovck.vercel.app/"],
     credentials: true,
   })
 );
