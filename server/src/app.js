@@ -13,13 +13,13 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      'https://task-manager-ovck.vercel.app', // Without slash
-      'https://task-manager-ovck.vercel.app/', // With slash
+      "https://task-manager-ovck.vercel.app", // Without slash
+      "https://task-manager-ovck.vercel.app/", // With slash
+      "http://localhost:3000",
     ],
     credentials: true,
   })
 );
-
 
 // Database connection
 connectDB();
