@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import toast from "react-hot-toast";
-import TaskForm from "../../../components/TaskForm";
+import TaskForm from "../../components/TaskForm.js";
 
 export default function EditTask() {
   const router = useRouter();
