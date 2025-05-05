@@ -8,6 +8,13 @@ export default function AuthInput({
   required,
   minLength,
 }) {
+  const placeholderText =
+    type === "password"
+      ? "••••••••"
+      : label
+      ? `Enter your ${label.toLowerCase()}`
+      : "Enter value";
+
   return (
     <div className="mb-5">
       <label
@@ -28,9 +35,7 @@ export default function AuthInput({
                     transition duration-150 ease-in-out placeholder-gray-400 text-gray-700"
         required={required}
         minLength={minLength}
-        placeholder={
-          type === "password" ? "••••••••" : `Enter your ${label.toLowerCase()}`
-        }
+        placeholder={placeholderText}
       />
       {minLength && type === "password" && (
         <p className="mt-1 text-xs text-gray-500">
