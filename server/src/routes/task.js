@@ -210,11 +210,12 @@ router.get("/users", auth, async (req, res) => {
 //For notifications
 router.get("/notifications", auth, async (req, res) => {
   try {
+    console.log("Line 213");
     const notifications = await Notification.find({ recipient: req.user.id })
       .sort({ createdAt: -1 })
       .populate("sender", "name")
       .populate("task", "title");
-
+    console.log(notifications);
     res.json(notifications);
   } catch (error) {
     console.error("Error fetching notifications:", error);

@@ -37,7 +37,6 @@ export default function Dashboard() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
-
   useEffect(() => {
     const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL, {
       withCredentials: true,
@@ -400,6 +399,23 @@ export default function Dashboard() {
     tap: { scale: 0.95 },
   };
 
+  const fetchAuditLogs = async (taskId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/${taskId}/audit-logs`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setAuditLogs(response.data);
+      setSelectedTaskForAudit(taskId);
+      setShowAuditLogs(true);
+    } catch (error) {
+      console.error("Error fetching audit logs:", error);
+      toast.error("Failed to fetch audit logs");
+    }
+  };
   return (
     <div
       className={`min-h-screen ${darkMode ? "dark bg-gray-900" : "bg-gray-50"}`}
@@ -483,7 +499,7 @@ export default function Dashboard() {
               darkMode ? "text-white" : "text-gray-800"
             }`}
           >
-            Task Manager
+            TaskFlow
           </h1>
           <div className="flex items-center space-x-4">
             <button
