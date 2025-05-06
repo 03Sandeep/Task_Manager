@@ -1,297 +1,176 @@
-📋 Overview
-TaskFlow is a comprehensive task management application designed for small teams to efficiently create, assign, track, and manage tasks in real-time. The application provides an intuitive user interface with advanced features like task filtering, real-time notifications, and an AI-powered task assistant.
+TaskFlow is a comprehensive task management system designed for small teams to efficiently create, assign, track, and manage tasks. The application provides an intuitive interface with real-time notifications and robust filtering capabilities to enhance team productivity.
+
 ✨ Features
-User Authentication & Security
+🔐 User Authentication
 
-Secure user registration and login system
-Password hashing using bcrypt
-JWT-based authentication
-Protected routes and API endpoints
+-Secure registration and login system
+-JWT-based authentication
+-Password hashing for enhanced security
+-Session management
 
-Task Management
+📝 Task Management
 
-Complete CRUD Operations:
+-Full CRUD operations for tasks
+-Task attributes include:
 
-Create tasks with title, description, due date, priority, and status
-View task details and history
-Update task information and status
-Delete tasks
+Title
+-Description
+-Due date
+-Priority levels (High, Medium, Low)
+Status tracking (Pending, In Progress, Completed)
 
 
-Priority Levels: Low, Medium, High
-Status Tracking: Pending, In Progress, Completed, Overdue
 
-Team Collaboration
+👥 Team Collaboration
 
 Assign tasks to team members
-Transfer task ownership
-Task history tracking
-Comments and discussions on tasks
+Real-time notifications via Socket.io
+Notification management (mark as read, delete)
 
-Dashboard Views
-
-Personalized Dashboard showing:
+📊 Dashboard Views
 
 Tasks assigned to you
 Tasks created by you
 Overdue tasks
+Task completion status
 
-
-
-Advanced Search & Filtering
+🔍 Search and Filter System
 
 Search by task title or description
-Filter tasks by:
+Advanced filtering:
 
-Status (All Statuses dropdown)
-Priority (All Priorities dropdown)
-Due Dates (All Due Dates dropdown)
+Status (All, Pending, In Progress, Completed)
+Priority (All, High, Medium, Low)
 
+🤖 Task Assistant
 
+Interactive chat-based task assistant
+Quick command system:
 
-Task Assistant
-
-Assistant for quick task creation and management
-Command-based interface:
-
-"create task" - Add new tasks
-"view tasks" - See tasks assigned to you
-"created tasks" - See tasks you've created
-"overdue tasks" - See your overdue tasks
+create task - Add new tasks
+view tasks - See assigned tasks
+created tasks - View tasks you've created
+overdue tasks - Check overdue items
 
 
-Dedicated backend routes for assistant operations
-Natural language processing for task management
-Real-time response and task creation
-Interactive UI with command suggestions
 
-Real-time Notifications
+🌓 Appearance
 
-Socket.io integration for instant notifications when:
-
-Tasks are assigned to you
-Task status changes
-Due dates are approaching
-
-
-User-specific notification rooms
-Mark notifications as read or delete them
-Persistent notification storage in database
-Real-time delivery to connected clients
-
-UI/UX Features
-
-Responsive design for mobile and desktop
-Dark mode / Light mode toggle
-Intuitive task cards with visual priority indicators
-Quick action buttons for common operations
-Mark complete functionality
+Dark mode and light mode support
+Responsive design for all device sizes
 
 🛠️ Tech Stack
-
 Frontend
 
-Next.js - React framework with server-side rendering
-Tailwind CSS - For responsive and customizable UI
-Context API - For state management
-Axios - For API requests
-Socket.io-client - For real-time communication
+Next.js - React framework for server-side rendering and static generation
+React - UI component library
+Tailwind CSS - Utility-first CSS framework
+Socket.io Client - Real-time client-server communication
 
 Backend
 
 Node.js - JavaScript runtime
-Express.js - Web application framework
-Socket.io - For real-time notifications and updates
-JWT - For secure authentication
-bcrypt - For password hashing
-dotenv - For environment variable management
-cors - For cross-origin resource sharing
+Express - Web application framework
+Socket.io - Real-time event-based communication
+MongoDB - NoSQL database
+Mongoose - MongoDB object modeling
+JWT - JSON Web Tokens for authentication
+bcrypt - Password hashing
 
-Database
-
-MongoDB - NoSQL database for flexible data storage
-Mongoose - ODM library for MongoDB
-
-Deployment
-
-Vercel - Frontend deployment
-Render - Backend deployment
-
-🚀 Installation & Setup
-Prerequisites
-
-Node.js (v14.x or higher)
-npm or yarn
-MongoDB instance
-
-Backend Setup
+📦 Installation
 bash# Clone the repository
-git clone https://github.com/yourusername/taskmaster.git
+git clone https://github.com/yourusername/taskflow.git
 
-# Navigate to backend directory
-cd taskmaster/backend
+# Navigate to project directory
+cd taskflow
 
-# Install dependencies
+# Install dependencies for backend
+cd server
 npm install
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your MongoDB URI and JWT secret
-
-# Start the server
-npm start
-# Or for development
-npm run dev
-Frontend Setup
-bash# Navigate to frontend directory
-cd ../frontend
-
-# Install dependencies
+# Install dependencies for frontend
+cd ../client
 npm install
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your backend API URL
-
-# Start the development server
-npm run dev
-
-# Build for production
-npm run build
-Socket.io Setup
-The backend is already configured with Socket.io. Make sure your frontend connects to the Socket.io server:
-javascript// In your frontend code
-import io from 'socket.io-client';
-
-const socket = io(process.env.NEXT_PUBLIC_API_URL);
-
-// Join user's room for notifications
-socket.emit('join', userId);
-
-// Listen for notifications
-socket.on('notification', (notification) => {
-  // Handle new notification
-});
-🔧 Configuration
-Create a .env file in the backend directory with the following variables:
+⚙️ Configuration
+Create a .env file in the server directory:
 PORT=5000
-MONGODB_URI=your_mongodb_connection_string
+MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
-JWT_EXPIRY=24h
-NODE_ENV=development
-📱 Usage
+CLIENT_URL=http://localhost:3000
+Create a .env.local file in the client directory:
+NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_SOCKET_URL=http://localhost:5000
+🚀 Running the Application
+bash# Start backend server
+cd server
+npm run dev
 
-Register a new account or login with existing credentials
-Create tasks using the "Create New Task" button or Task Assistant
-Assign tasks to team members
-Track task progress from your dashboard
-Use filters to sort and find specific tasks
-Receive real-time notifications for task updates
-Toggle between dark and light mode for your preferred experience
+# Start frontend in a new terminal
+cd client
+npm run dev
+The application will be available at:
 
-🔍 API Endpoints
-Authentication
+Frontend: http://localhost:3000
+Backend API: http://localhost:5000
 
-POST /api/register - Register a new user
-POST /api/login - Login and get JWT token
-GET /api/user/profile - Get authenticated user profile
-GET /api/protected - Protected route example
-
-Tasks
-
-POST /api/tasks - Create a new task
-GET /api/tasks/assigned - Get tasks assigned to the authenticated user
-GET /api/tasks/created - Get tasks created by the authenticated user
-GET /api/tasks/overdue - Get overdue tasks assigned to the authenticated user
-PUT /api/tasks/:id - Update a task
-DELETE /api/tasks/:id - Delete a task
-
-Task Assistant
-
-GET /api/assistant/users - Get all users for task assignment
-GET /api/assistant/tasks/:type - Get tasks by type (assigned, created, overdue)
-POST /api/assistant/tasks - Create a new task via assistant
-
-Users
-
-GET /api/users - Get all users (for task assignment)
-
-Notifications
-
-GET /api/notifications - Get user notifications
-PUT /api/notifications/:id/read - Mark notification as read
-DELETE /api/notifications/:id - Delete a notification
-
-👥 Team Collaboration
-TaskMaster is designed for seamless team collaboration:
-
-Team members can see tasks assigned to them
-Task creators can track all tasks they've created
-Real-time notifications keep everyone updated
-Comment system allows for discussion within tasks
-
+📱 Application Structure
+taskflow/
+├── client/                  # Frontend Next.js application
+│   ├── components/          # React components
+│   ├── contexts/            # React contexts (auth, theme, etc.)
+│   ├── pages/               # Next.js pages
+│   ├── public/              # Static assets
+│   ├── styles/              # CSS and Tailwind configuration
+│   └── utils/               # Utility functions
+│
+├── server/                  # Backend Express application
+│   ├── config/              # Configuration files
+│   ├── controllers/         # Request handlers
+│   ├── middleware/          # Express middleware
+│   ├── models/              # Mongoose models
+│   ├── routes/              # API routes
+│   ├── services/            # Business logic
+│   └── utils/               # Utility functions
 🔒 Security Features
 
+JWT-based authentication
 Password hashing with bcrypt
-JWT authentication for secure API access
-Custom middleware for route protection
-Role-based authorization for task operations:
-
-Only creators can delete tasks
-Only creators or assignees can update tasks
-Task reassignment restricted to creators
-
-
 Input validation and sanitization
-Protected routes on both frontend and backend
-Secure CORS configuration
-Environment variable protection
+Protected API routes
+Secure HTTP-only cookies
+CORS protection
 
-🌙/☀️ Dark Mode & Light Mode
-The application supports both dark and light themes:
+🧪 Testing
+bash# Run backend tests
+cd server
+npm test
 
-Dark mode for reduced eye strain in low-light environments
-Light mode for bright environments
-System preference detection with manual override option
-
-📊 System Architecture
-
-┌────────────────┐      ┌────────────────────┐      ┌─────────────────┐
-│                │      │                    │      │                 │
-│  Next.js       │◄────►│  Express.js API    │◄────►│  MongoDB        │
-│  Frontend      │      │  Backend           │      │  Database       │
-│                │      │                    │      │                 │
-└────────┬───────┘      └─────────┬──────────┘      └─────────────────┘
-         │                        │
-         │                        │
-         │                        │
-         │                ┌───────▼────────┐
-         │                │                │
-         └───────────────►│  Socket.io     │
-                          │  Server        │
-                          │                │
-                          └────────────────┘
-
+# Run frontend tests
+cd client
+npm test
 🚧 Future Enhancements
 
-Kanban board view for tasks
-Time tracking functionality
-Integration with calendar applications
-Mobile application
-Advanced reporting and analytics
-Role-based access control
-Task templates and recurring tasks
-File attachments for tasks
+Calendar view for better deadline visualization
 Task dependencies and subtasks
+File attachments
+Advanced reporting and analytics
 Team performance metrics
-Integration with popular collaboration tools
+Mobile application
+
+👨‍💻 Contributing
+
+Fork the repository
+Create your feature branch (git checkout -b feature/amazing-feature)
+Commit your changes (git commit -m 'Add some amazing feature')
+Push to the branch (git push origin feature/amazing-feature)
+Open a Pull Request
 
 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
-📞 Contact
-For any questions or feedback, please reach out to:
+🙏 Acknowledgements
 
-Email: sandeepsinha1210@gmail.com
-GitHub: https://github.com/03Sandeep
-
-Developed with ❤️ by Sandeep
+Next.js
+Express
+Socket.io
+MongoDB
+Tailwind CSS
