@@ -75,6 +75,7 @@ export default function Dashboard() {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
+          console.log(response.data);
           setNotifications(response.data);
           setUnreadCount(response.data.filter((n) => !n.read).length);
         } catch (error) {

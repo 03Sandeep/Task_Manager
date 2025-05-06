@@ -41,7 +41,7 @@ app.use("/api/help", (req, res) => {
 // Create HTTP server
 const server = http.createServer(app);
 
-// Socket setup
+// Socket setup - Updated configuration
 const io = socketio(server, {
   cors: {
     origin: [
@@ -51,29 +51,50 @@ const io = socketio(server, {
     ],
     methods: ["GET", "POST"],
     credentials: true,
+    transports: ["websocket", "polling"], // Explicit transports
   },
+  allowEIO3: true, // For compatibility
+  pingTimeout: 60000, // Increase timeout
+  pingInterval: 25000,
 });
 
-// Socket.io connection handler
+// Socket.io connection handler with improved logging
 io.on("connection", (socket) => {
-  console.log("New client connected");
+  console.log(`New client connected: ${socket.id}`);
 
   // Join a room based on user ID
   socket.on("join", (userId) => {
-    socket.join(userId);
-    console.log(`User ${userId} joined their room`);
+    if (!userId) {
+      console.error("No userId provided for join");
+      return;
+    }
+    socket.join(userId.toString()); // Ensure string format
+    console.log(`User ${userId} joined room ${userId}`);
   });
 
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
+  socket.on("disconnect", (reason) => {
+    console.log(`Client disconnected (${socket.id}): ${reason}`);
+  });
+
+  socket.on("error", (err) => {
+    console.error(`Socket error (${socket.id}):`, err);
   });
 });
 
 // Make io accessible to routes
 app.set("io", io);
 
-// Start server - ONLY ONCE using the HTTP server
+// Health check endpoint for WebSocket
+app.get("/ws-health", (req, res) => {
+  res.json({
+    activeSockets: io.engine.clientsCount,
+    ws: io.engine.ws,
+  });
+});
+
+// Start server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`WebSocket path: ${io.path()}`);
 });
