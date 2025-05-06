@@ -151,8 +151,16 @@ Open a Pull Request
 This project is licensed under the MIT License - see the LICENSE file for details.
 🙏 Acknowledgements
 
+
 Next.js
 Express
 Socket.io
 MongoDB
 Tailwind CSS
+
+📞 Contact
+For any questions or feedback, please reach out to:
+
+Email: sandeepsinha1210@gmail.com
+
+Developed with ❤️ by Sandeep
