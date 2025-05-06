@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Task = require("../models/Task");
 const auth = require("../middleware/auth");
+const Notification = require("../models/Notification");
 
 // Create a new task
 router.post("/tasks", auth, async (req, res) => {
@@ -23,6 +24,36 @@ router.post("/tasks", auth, async (req, res) => {
     await task.populate("createdBy", "name email");
     if (task.assignedTo) {
       await task.populate("assignedTo", "name email");
+
+      // Create notification if task is assigned to someone
+      if (task.assignedTo._id.toString() !== req.user.id.toString()) {
+        const notification = new Notification({
+          recipient: task.assignedTo._id,
+          sender: req.user.id,
+          task: task._id,
+          message: `You've been assigned a new task: "${task.title}"`,
+        });
+
+        await notification.save();
+
+        // Emit notification to the recipient
+        req.app
+          .get("io")
+          .to(task.assignedTo._id.toString())
+          .emit("notification", {
+            _id: notification._id,
+            message: notification.message,
+            task: {
+              _id: task._id,
+              title: task.title,
+            },
+            sender: {
+              _id: req.user.id,
+              name: req.user.name,
+            },
+            createdAt: notification.createdAt,
+          });
+      }
     }
 
     res.status(201).json(task);
@@ -172,6 +203,59 @@ router.get("/users", auth, async (req, res) => {
     res.json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+//For notifications
+router.get("/notifications", auth, async (req, res) => {
+  try {
+    const notifications = await Notification.find({ recipient: req.user.id })
+      .sort({ createdAt: -1 })
+      .populate("sender", "name")
+      .populate("task", "title");
+
+    res.json(notifications);
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.put("/notifications/:id/read", auth, async (req, res) => {
+  try {
+    const notification = await Notification.findOneAndUpdate(
+      { _id: req.params.id, recipient: req.user.id },
+      { read: true },
+      { new: true }
+    );
+
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+
+    res.json(notification);
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Add this new route for deleting notifications
+router.delete("/notifications/:id", auth, async (req, res) => {
+  try {
+    const notification = await Notification.findOneAndDelete({
+      _id: req.params.id,
+      recipient: req.user.id, // Only allow recipient to delete
+    });
+
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+
+    res.json({ message: "Notification deleted" });
+  } catch (error) {
+    console.error("Error deleting notification:", error);
     res.status(500).json({ message: "Server error" });
   }
 });

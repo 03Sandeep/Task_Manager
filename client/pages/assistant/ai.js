@@ -2,7 +2,15 @@ import React, { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-import { CheckSquare, ListTodo, AlertCircle, PlusCircle } from "lucide-react";
+import {
+  CheckSquare,
+  ListTodo,
+  AlertCircle,
+  PlusCircle,
+  X,
+  Send,
+  ChevronRight,
+} from "lucide-react";
 
 function TaskAssistant() {
   const [messages, setMessages] = useState([]);
@@ -13,6 +21,7 @@ function TaskAssistant() {
   const [currentTaskId, setCurrentTaskId] = useState(null);
   const [userToken, setUserToken] = useState(null);
   const [users, setUsers] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
 
   const [newTask, setNewTask] = useState({
     title: "",

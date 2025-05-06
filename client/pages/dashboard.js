@@ -4,6 +4,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import TaskAssistant from "./assistant/ai";
 import { motion, AnimatePresence } from "framer-motion";
+import { io } from "socket.io-client";
+import NotificationBell from "./NotificationBell";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -32,6 +34,102 @@ export default function Dashboard() {
   });
   const [availableUsers, setAvailableUsers] = useState([]);
   const [userData, setUserData] = useState({});
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+    const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL, {
+      withCredentials: true,
+    });
+
+    socket.on("connect", () => {
+      console.log("Connected to WebSocket server");
+      socket.emit("join", userData._id);
+    });
+
+    socket.on("notification", (notification) => {
+      setNotifications((prev) => [notification, ...prev]);
+      setUnreadCount((prev) => prev + 1);
+      toast.success(`New task assigned: ${notification.message}`);
+    });
+
+    // Add this to your socket.io connection handler
+    socket.on("notification_deleted", ({ notificationId }) => {
+      setNotifications((prev) => prev.filter((n) => n._id !== notificationId));
+      setUnreadCount((prev) => prev - 1);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [userData._id]);
+
+  useEffect(() => {
+    if (userData._id) {
+      const fetchNotifications = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/notifications`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          setNotifications(response.data);
+          setUnreadCount(response.data.filter((n) => !n.read).length);
+        } catch (error) {
+          console.error("Error fetching notifications:", error);
+        }
+      };
+      fetchNotifications();
+    }
+  }, [userData._id]);
+
+  const markAsRead = async (notificationId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/notifications/${notificationId}/read`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setNotifications(
+        notifications.map((n) =>
+          n._id === notificationId ? { ...n, read: true } : n
+        )
+      );
+      setUnreadCount((prev) => prev - 1);
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
+
+  const deleteNotification = async (notificationId) => {
+    if (!confirm("Are you sure you want to delete this notification?")) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/notifications/${notificationId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setNotifications(notifications.filter((n) => n._id !== notificationId));
+      setUnreadCount((prev) => prev - 1);
+      toast.success("Notification deleted");
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+      toast.error("Failed to delete notification");
+    }
+  };
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -431,6 +529,15 @@ export default function Dashboard() {
                 </svg>
               )}
             </button>
+            <NotificationBell
+              notifications={notifications}
+              unreadCount={unreadCount}
+              showNotifications={showNotifications}
+              setShowNotifications={setShowNotifications}
+              markAsRead={markAsRead}
+              darkMode={darkMode}
+              deleteNotification={deleteNotification}
+            />
             <motion.button
               onClick={handleLogout}
               className={`py-2 px-4 rounded-lg text-sm flex items-center ${
