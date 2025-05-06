@@ -113,24 +113,6 @@ The application will be available at:
 Frontend: http://localhost:3000
 Backend API: http://localhost:5000
 
-📱 Application Structure
-taskflow/
-├── client/                  # Frontend Next.js application
-│   ├── components/          # React components
-│   ├── contexts/            # React contexts (auth, theme, etc.)
-│   ├── pages/               # Next.js pages
-│   ├── public/              # Static assets
-│   ├── styles/              # CSS and Tailwind configuration
-│   └── utils/               # Utility functions
-│
-├── server/                  # Backend Express application
-│   ├── config/              # Configuration files
-│   ├── controllers/         # Request handlers
-│   ├── middleware/          # Express middleware
-│   ├── models/              # Mongoose models
-│   ├── routes/              # API routes
-│   ├── services/            # Business logic
-│   └── utils/               # Utility functions
 🔒 Security Features
 
 JWT-based authentication
